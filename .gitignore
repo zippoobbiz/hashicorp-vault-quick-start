@@ -1,0 +1,5 @@
+
+consul-backend/consul/data/*
+!consul-backend/consul/data/.gitkeep
+consul-backend-HA/consul/data/*
+!consul-backend-HA/consul/data/.gitkeep

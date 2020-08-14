@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  vault:
+    image: vault:1.5.0
+    working_dir: /vault
+    ports:
+      - 8200:8200
+    volumes:
+      - ./vault:/vault
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    command: server
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      - consul
+  consul:
+    image: consul:1.8.2
+    working_dir: /consul
+    ports:
+      - 8500:8500
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+      - CONSUL_ALLOW_PRIVILEGED_PORTS=
+    command: agent -server -bootstrap-expect 1
+    volumes:
+      - ./consul/config:/consul/config
+      - ./consul/data:/consul/data
+  consul-standby:
+    image: consul:1.8.2
+    working_dir: /consul
+    environment:
+      - CONSUL_ALLOW_PRIVILEGED_PORTS=
+    command: agent -server -join consul
+    volumes:
+      - ./consul/config:/consul/config
+    depends_on:
+      - consul
+
+  
